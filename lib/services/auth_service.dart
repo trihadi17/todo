@@ -50,4 +50,43 @@ class AuthService {
       throw Exception('Registration Failed');
     }
   }
+
+  // Login
+  Future<UserModel> login({
+    String email,
+    String password,
+  }) async {
+    // URL
+    Uri url = Uri.parse('$baseUrl/login');
+
+    // Header
+    var headers = {'Content-Type': 'application/json'};
+
+    // Json Encode
+    var body = jsonEncode({
+      'email': email,
+      'password': password,
+    });
+
+    // Request
+    var response = await http.post(
+      url,
+      headers: headers,
+      body: body,
+    );
+
+    print(jsonDecode(response.body)['data']);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body)['data'];
+
+      UserModel user = UserModel.fromJson(data['user']);
+
+      user.token = 'Bearer ' + data['access_token'];
+
+      return user;
+    } else {
+      throw Exception('Registration Failed');
+    }
+  }
 }

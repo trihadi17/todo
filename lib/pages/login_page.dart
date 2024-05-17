@@ -7,12 +7,62 @@ import 'package:todo/theme.dart';
 import 'package:todo/pages/dashboard_page.dart';
 import 'package:todo/pages/registration_page.dart';
 
+// Widget
+import 'package:todo/widgets/loading_button.dart';
+
 // Transition Page
 import '../transitions/custom_page.dart';
 
-class LoginPage extends StatelessWidget {
+// Provider
+import 'package:provider/provider.dart';
+import 'package:todo/providers/auth_provider.dart';
+
+// Model
+import 'package:todo/model/user.dart';
+
+class LoginPage extends StatefulWidget {
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  // Text Editing Controller
+  TextEditingController emailController = TextEditingController(text: '');
+  TextEditingController passwordController = TextEditingController(text: '');
+
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
+    // Provider
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+    handleSignIn() async {
+      setState(() {
+        isLoading = true;
+      });
+
+      if (await authProvider.login(
+        email: emailController.text,
+        password: passwordController.text,
+      )) {
+        Navigator.of(context).pushAndRemoveUntil(
+            CustomPageRoute(page: DashboardPage()), (route) => false);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            'Login Failed',
+            textAlign: TextAlign.center,
+          ),
+        ));
+      }
+
+      setState(() {
+        isLoading = false;
+      });
+    }
+
     Widget header() {
       return Center(
         child: Column(
@@ -73,6 +123,8 @@ class LoginPage extends StatelessWidget {
                 color: whiteColor,
               ),
               child: TextFormField(
+                controller: emailController,
+                textInputAction: TextInputAction.next,
                 style: blackTextStyle.copyWith(
                   fontSize: 15,
                   fontWeight: regular,
@@ -124,6 +176,7 @@ class LoginPage extends StatelessWidget {
                 color: whiteColor,
               ),
               child: TextFormField(
+                controller: passwordController,
                 obscureText: true,
                 obscuringCharacter: '*',
                 style: blackTextStyle.copyWith(
@@ -175,10 +228,7 @@ class LoginPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(5),
             ),
             child: TextButton(
-              onPressed: () {
-                Navigator.of(context).pushAndRemoveUntil(
-                    CustomPageRoute(page: DashboardPage()), (route) => false);
-              },
+              onPressed: handleSignIn,
               child: Text(
                 'Login',
                 style: blackTextStyle.copyWith(fontSize: 20, fontWeight: bold),
@@ -246,7 +296,7 @@ class LoginPage extends StatelessWidget {
                 header(),
                 emailInput(),
                 passwordInput(),
-                loginButton(),
+                isLoading ? LoadingButton() : loginButton(),
                 signUp(),
               ],
             )

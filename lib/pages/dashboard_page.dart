@@ -13,10 +13,16 @@ import 'package:analog_clock/analog_clock.dart';
 // Provider
 import 'package:todo/providers/auth_provider.dart';
 
+// Model
+import 'package:todo/model/user.dart';
+
 class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+    // Get Current User
+    UserModel user = authProvider.user;
 
     Widget header() {
       return Center(
@@ -24,18 +30,18 @@ class DashboardPage extends StatelessWidget {
           children: [
             SizedBox(height: 134),
             ClipOval(
-              child: Image.asset(
-                'assets/image_profile.png',
-                fit: BoxFit.cover,
+              child: Image.network(
+                'https://ui-avatars.com/api/?name=${user.name}&color=7F9CF5&background=EBF4FF&size=150',
                 width: 100,
                 height: 100,
+                fit: BoxFit.cover,
               ),
             ),
             SizedBox(
               height: 10,
             ),
             Text(
-              'Welcome Mary!',
+              'Welcome, ${user.name}!',
               style: whiteTextStyle.copyWith(
                 fontSize: 22,
                 fontWeight: bold,
