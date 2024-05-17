@@ -8,29 +8,38 @@ import 'pages/login_page.dart';
 import 'pages/registration_page.dart';
 import 'pages/dashboard_page.dart';
 
+// Provider
+import 'package:provider/provider.dart';
+import 'package:todo/providers/auth_provider.dart';
+
 void main() {
   // hanya menampilkan view secara portrait
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      routes: {
-        '/': (context) => SplashScreen(),
-        '/onboarding': (context) => OnboardingPage(),
-        '/login': (context) => LoginPage(),
-        '/registration': (context) => RegistrationPage(),
-        '/dashboard': (context) => DashboardPage(),
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(),
+        )
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        routes: {
+          '/': (context) => SplashScreen(),
+          '/onboarding': (context) => OnboardingPage(),
+          '/login': (context) => LoginPage(),
+          '/registration': (context) => RegistrationPage(),
+          '/dashboard': (context) => DashboardPage(),
+        },
+      ),
     );
   }
 }

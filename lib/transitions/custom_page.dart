@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CustomPageRoute extends PageRouteBuilder {
   final Widget page;
 
-  CustomPageRoute({required this.page})
+  CustomPageRoute({this.page})
       : super(
           transitionDuration: Duration(milliseconds: 500), // Durasi transisi
           transitionsBuilder: (

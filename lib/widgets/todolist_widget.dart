@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:todo/theme.dart';
 
 class TodoListWidget extends StatelessWidget {
-  const TodoListWidget({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -28,7 +26,7 @@ class TodoListWidget extends StatelessWidget {
             ),
           ),
           value: false,
-          onChanged: (bool? value) {},
+          onChanged: (bool value) {},
           activeColor: toscaColor,
           checkColor: blackColor,
           side: BorderSide(color: blackColor, width: 2),
