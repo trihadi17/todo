@@ -9,20 +9,58 @@ import 'package:provider/provider.dart';
 // Provider
 import 'package:todo/providers/auth_provider.dart';
 
-class RegistrationPage extends StatelessWidget {
+// Widget
+import 'package:todo/widgets/loading_button.dart';
+
+class RegistrationPage extends StatefulWidget {
+  @override
+  State<RegistrationPage> createState() => _RegistrationPageState();
+}
+
+class _RegistrationPageState extends State<RegistrationPage> {
   // Text Editing Controller
   TextEditingController nameController = TextEditingController(text: '');
+
   TextEditingController emailController = TextEditingController(text: '');
+
   TextEditingController passwordController = TextEditingController(text: '');
+
   TextEditingController confirmPasswordController =
       TextEditingController(text: '');
+
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     // Provider
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
 
-    handleSignUp() async {}
+    handleSignUp() async {
+      setState(() {
+        isLoading = true;
+      });
+
+      if (await authProvider.register(
+          name: nameController.text,
+          email: emailController.text,
+          password: passwordController.text)) {
+        Navigator.of(context).pop();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: Text(
+              'Registration Failed',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+      }
+
+      setState(() {
+        isLoading = false;
+      });
+    }
 
     Widget header() {
       return Center(
@@ -361,7 +399,7 @@ class RegistrationPage extends StatelessWidget {
                 emailInput(),
                 passwordInput(),
                 confirmPasswordInput(),
-                registerButton(),
+                isLoading ? LoadingButton() : registerButton(),
                 signUp(),
               ],
             )

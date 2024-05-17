@@ -21,15 +21,25 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> postData() async {
-    final url = Uri.parse(
-        'https://todo-d7e45-default-rtdb.firebaseio.com/users.json'); // Ganti dengan URL Firebase Anda
-    final response = await http.get(url);
+  Future<bool> register({
+    String name,
+    String email,
+    String password,
+  }) async {
+    // try catch
+    try {
+      UserModel user = await AuthService().register(
+        name: name,
+        email: email,
+        password: password,
+      );
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
+      _user = user;
+      print(user.token);
 
-      print('Specific Value: ${responseData}');
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 }

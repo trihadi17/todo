@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 
 class AuthService {
   // URL API
-  String baseUrl = "https://todo-d7e45-default-rtdb.firebaseio.com/users.json";
+  String baseUrl = "https://todos-trihadi.000webhostapp.com/api";
 
   // Registration
   Future<UserModel> register({
@@ -17,7 +17,7 @@ class AuthService {
     String password,
   }) async {
     // URL
-    Uri url = Uri.parse('$baseUrl');
+    Uri url = Uri.parse('$baseUrl/register');
 
     // Header
     var headers = {'Content-Type': 'application/json'};
@@ -36,12 +36,15 @@ class AuthService {
       body: body,
     );
 
-    print(response.body);
+    print(jsonDecode(response.body)['data']);
 
     if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
+      var data = jsonDecode(response.body)['data'];
 
-      UserModel user = UserModel.fromJson(data);
+      UserModel user = UserModel.fromJson(data['user']);
+
+      user.token = 'Bearer ' + data['access_token'];
+
       return user;
     } else {
       throw Exception('Registration Failed');
