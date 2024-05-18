@@ -47,4 +47,33 @@ class TodoService {
       throw Exception('Failed');
     }
   }
+
+  Future<void> addTodo(String token, String task) async {
+    // URL
+    Uri url = Uri.parse('$baseUrl/todo');
+
+    // Header
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': token,
+    };
+
+    // Json Encode
+    var body = jsonEncode({
+      'task': task,
+    });
+
+    // Request
+    var response = await http.post(
+      url,
+      headers: headers,
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      print('success');
+    } else {
+      throw Exception('Failed to add');
+    }
+  }
 }

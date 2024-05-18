@@ -9,6 +9,7 @@ import '../widgets/todolist_widget.dart';
 // Package
 import 'package:provider/provider.dart';
 import 'package:analog_clock/analog_clock.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // Provider
 import 'package:todo/providers/auth_provider.dart';
@@ -16,6 +17,13 @@ import 'package:todo/providers/todo_provider.dart';
 
 // Model
 import 'package:todo/model/user.dart';
+
+// Page
+import 'package:todo/pages/todo_add_page.dart';
+import 'package:todo/pages/login_page.dart';
+
+// Transition
+import 'package:todo/transitions/custom_page.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -43,7 +51,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
-    TodoProvider todoProvider = Provider.of<TodoProvider>(context);
+    // TodoProvider todoProvider = Provider.of<TodoProvider>(context);
 
     // Get Current User
     UserModel user = authProvider.user;
@@ -52,7 +60,62 @@ class _DashboardPageState extends State<DashboardPage> {
       return Center(
         child: Column(
           children: [
-            SizedBox(height: 134),
+            SizedBox(
+              height: 40,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(
+                              'Confirm',
+                              style: blackTextStyle.copyWith(
+                                  fontSize: 25, fontWeight: bold),
+                            ),
+                            content: Text(
+                              'Do you want to logout?',
+                              style: blackTextStyle.copyWith(fontSize: 13),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  'Cancel',
+                                  style:
+                                      GoogleFonts.poppins(color: Colors.grey),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                      CustomPageRoute(page: LoginPage()),
+                                      (route) => false);
+                                },
+                                child: Text(
+                                  'Logout',
+                                  style: GoogleFonts.poppins(),
+                                ),
+                              ),
+                            ],
+                          );
+                        });
+                  },
+                  child: Icon(
+                    Icons.power_settings_new_outlined,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 60),
             ClipOval(
               child: Image.network(
                 'https://ui-avatars.com/api/?name=${user.name}&color=7F9CF5&background=EBF4FF&size=150',
@@ -170,11 +233,9 @@ class _DashboardPageState extends State<DashboardPage> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                todoProvider
-                                    .getTodos('${user.token}')
-                                    .then((value) {
-                                  setState(() {});
-                                });
+                                Navigator.of(context).push(
+                                  CustomPageRoute(page: TodoAddPage()),
+                                );
                               },
                               child: Image.asset(
                                 'assets/icon_add.png',
@@ -194,27 +255,33 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                           child: Scrollbar(
                             child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: todoProvider.todos.length == 0
-                                    ? [
-                                        Center(
-                                          child: Text(
-                                            'No Data',
-                                            style: blackTextStyle.copyWith(
-                                                fontSize: 16),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 30,
-                                        ),
-                                        Center(
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                      ]
-                                    : todoProvider.todos
-                                        .map((todo) => TodoListWidget(todo))
-                                        .toList(),
+                              child: Consumer<TodoProvider>(
+                                builder: (context, todoProvider, child) {
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: todoProvider.todos.length == 0
+                                        ? [
+                                            Center(
+                                              child: Text(
+                                                'No Data',
+                                                style: blackTextStyle.copyWith(
+                                                    fontSize: 16),
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 30,
+                                            ),
+                                            Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            ),
+                                          ]
+                                        : todoProvider.todos
+                                            .map((todo) => TodoListWidget(todo))
+                                            .toList(),
+                                  );
+                                },
                               ),
                             ),
                           ),
