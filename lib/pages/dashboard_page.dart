@@ -12,14 +12,38 @@ import 'package:analog_clock/analog_clock.dart';
 
 // Provider
 import 'package:todo/providers/auth_provider.dart';
+import 'package:todo/providers/todo_provider.dart';
 
 // Model
 import 'package:todo/model/user.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  bool isInit = true;
+
+  @override
+  void didChangeDependencies() {
+    if (isInit) {
+      getAuth();
+    }
+    isInit = false;
+    super.didChangeDependencies();
+  }
+
+  getAuth() {
+    var authData = Provider.of<AuthProvider>(context, listen: false).user;
+    var todoData = Provider.of<TodoProvider>(context, listen: false)
+        .getTodos(authData.token);
+  }
+
   @override
   Widget build(BuildContext context) {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    TodoProvider todoProvider = Provider.of<TodoProvider>(context);
 
     // Get Current User
     UserModel user = authProvider.user;
@@ -144,11 +168,20 @@ class DashboardPage extends StatelessWidget {
                                 color: blackColor.withOpacity(0.8),
                               ),
                             ),
-                            Image.asset(
-                              'assets/icon_add.png',
-                              width: 20,
-                              height: 20,
-                              fit: BoxFit.cover,
+                            GestureDetector(
+                              onTap: () {
+                                todoProvider
+                                    .getTodos('${user.token}')
+                                    .then((value) {
+                                  setState(() {});
+                                });
+                              },
+                              child: Image.asset(
+                                'assets/icon_add.png',
+                                width: 20,
+                                height: 20,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ],
                         ),
@@ -163,7 +196,25 @@ class DashboardPage extends StatelessWidget {
                             child: SingleChildScrollView(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [TodoListWidget(), TodoListWidget()],
+                                children: todoProvider.todos.length == 0
+                                    ? [
+                                        Center(
+                                          child: Text(
+                                            'No Data',
+                                            style: blackTextStyle.copyWith(
+                                                fontSize: 16),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      ]
+                                    : todoProvider.todos
+                                        .map((todo) => TodoListWidget(todo))
+                                        .toList(),
                               ),
                             ),
                           ),

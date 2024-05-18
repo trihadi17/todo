@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 // Theme
 import 'package:todo/theme.dart';
 
+// Model
+import 'package:todo/model/todo.dart';
+
 class TodoListWidget extends StatelessWidget {
+  TodoModel todo;
+
+  TodoListWidget(this.todo);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -17,7 +24,7 @@ class TodoListWidget extends StatelessWidget {
           controlAffinity: ListTileControlAffinity.leading,
           contentPadding: EdgeInsets.zero,
           title: Text(
-            'Learn programming by 12am ',
+            '${todo.task}',
             maxLines: 1,
             style: blackTextStyle.copyWith(
               fontSize: 15,
@@ -25,7 +32,7 @@ class TodoListWidget extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          value: false,
+          value: todo.isDone == 1,
           onChanged: (bool value) {},
           activeColor: toscaColor,
           checkColor: blackColor,

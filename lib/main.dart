@@ -11,6 +11,7 @@ import 'pages/dashboard_page.dart';
 // Provider
 import 'package:provider/provider.dart';
 import 'package:todo/providers/auth_provider.dart';
+import 'package:todo/providers/todo_provider.dart';
 
 void main() {
   // hanya menampilkan view secara portrait
@@ -28,6 +29,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) => AuthProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => TodoProvider(),
         )
       ],
       child: MaterialApp(
